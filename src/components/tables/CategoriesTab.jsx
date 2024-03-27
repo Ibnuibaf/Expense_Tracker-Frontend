@@ -118,9 +118,9 @@ function CategoriesTab() {
                 </div>
               ))}
         </div>
-        <div className="h-[60vh] px-5">
+        <div className=" px-5">
           <p className="text-2xl font-semibold">My Budgets</p>
-          <div className="overflow-y-auto ">
+          <div className="h-[55vh] overflow-y-auto ">
             {categories.loading
               ? "Loading.."
               : categories.data.map((cat) => (

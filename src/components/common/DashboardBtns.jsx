@@ -21,7 +21,7 @@ function DashboardBtns() {
           className="bg-slate-800 hover:bg-slate-950 transition-all duration-300 rounded-md px-2  flex items-center gap-1"
           to={"/categories"}
         >
-          <TbTableShare size={24} /> Categories
+          <TbTableShare size={24} /> Categories & Budgets
         </Link>
         <Link
           className="bg-slate-800 hover:bg-slate-950 transition-all duration-300 rounded-md px-2  flex items-center gap-1"
