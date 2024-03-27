@@ -6,6 +6,7 @@ import { getExpenses } from "../../redux/actions/expensesActions";
 import { selectExpenses } from "../../redux/slices/expensesSlice";
 import { getCategories } from "../../redux/actions/categoriesActions";
 import { selectCategories } from "../../redux/slices/categoriesSlice";
+import { CSVLink } from "react-csv";
 
 function ExpensesTab() {
   const dispatch = useDispatch();
@@ -16,8 +17,10 @@ function ExpensesTab() {
     name: "",
   });
   const [search, setSearch] = useState("");
+  const [csvData, setCsvData] = useState(null);
   const getExpensesList = () => {
     dispatch(getExpenses({ search, category: selectedCategory.id }));
+    setCsvData(null)
   };
   const getCategoriesList = () => {
     dispatch(getCategories());
@@ -31,7 +34,20 @@ function ExpensesTab() {
       toast.error(error.response.data.message);
     }
   };
-
+  const generateCSV = () => {
+    const data = [];
+    expenses.data.forEach((expense) => {
+      data.push({
+        id: expense.id,
+        date: new Date(expense.date).toLocaleDateString(),
+        label: expense.label,
+        amount: expense.amount,
+        category: expense.category.name,
+        isRecurring: expense.isRecurring,
+      });
+    });
+    setCsvData(data);
+  };
   useEffect(() => {
     getExpensesList();
     getCategoriesList();
@@ -62,7 +78,7 @@ function ExpensesTab() {
         <div className="flex overflow-x-auto bg-gray-900 my-2">
           <button
             className="border-2 border-gray-500 px-4 bg-gray-900 py-2 text-white"
-            onClick={() => handleCategoryChange({id:"",name:""})}
+            onClick={() => handleCategoryChange({ id: "", name: "" })}
           >
             All
           </button>
@@ -75,17 +91,36 @@ function ExpensesTab() {
             </button>
           ))}
         </div>
-        {selectedCategory.id && (
-          <div>
-            <p>
-              Selected Category:{" "}
-              <span className="font-semibold text-lg">
-                {selectedCategory.name}
-              </span>
-            </p>
+        <div>
+          {selectedCategory.id && (
+            <div>
+              <p>
+                Selected Category:{" "}
+                <span className="font-semibold text-lg">
+                  {selectedCategory.name}
+                </span>
+              </p>
+            </div>
+          )}
+          <div className="flex justify-end ">
+            {csvData ? (
+              <CSVLink
+                className="bg-black rounded hover:bg-black/70 text-white px-4 py-2"
+                data={csvData}
+              >
+                Export CSV
+              </CSVLink>
+            ) : (
+              <button
+                className="bg-black rounded hover:bg-black/70 text-white px-4 py-2"
+                onClick={() => generateCSV()}
+              >
+                Generate CSV
+              </button>
+            )}
           </div>
-        )}
-        <div className="h-[65vh] overflow-y-auto mt-5">
+        </div>
+        <div className="h-[55vh] overflow-y-scroll mt-5">
           {expenses.loading
             ? "Loading"
             : !expenses.data.length
